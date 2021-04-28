@@ -81,6 +81,6 @@ impl Rotor {
     }
 
     pub fn turnover(&mut self) {
-        self.rotor_position = (self.rotor_position + 1) % 26
+        self.rotor_position = (self.rotor_position + 1) % 26;
     }
 }
