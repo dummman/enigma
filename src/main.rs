@@ -1,7 +1,5 @@
-mod rotor;
 mod enigma;
-mod reflector;
-mod plugboard;
+mod analysis;
 
 fn main() {
     println!("Hello, world!");

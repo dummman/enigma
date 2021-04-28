@@ -16,6 +16,9 @@ impl EnigmaKey {
     }
 
     pub fn new_from_key(key: EnigmaKey) -> Self {
-
+        self::rotors = if rotors.is_null() {vec!["I", "II", "III"]} else {rotors};
+        self::indicators = if indicators.is_null {vec![0,0,0]} else {indicators};
+        self.rings = if rings.is_null {vec![0,0,0]} else {rings};
+        self.plugboard = if plugboard_connections.is_null {""} else {plugboard_connections};
     }
 }

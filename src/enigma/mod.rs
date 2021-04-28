@@ -1,6 +1,6 @@
-mod rotor;
-mod reflector;
-mod plugboard;
+pub mod rotor;
+pub mod reflector;
+pub mod plugboard;
 
 #[derive(Default)]
 struct Enigma {
