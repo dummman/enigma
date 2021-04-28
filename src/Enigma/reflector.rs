@@ -8,7 +8,7 @@ impl Reflector {
         Reflector{forward_wiring: decode_wiring(encoding),}
     }
 
-    pub fn Create(name: String) -> Self {
+    pub fn create(name: String) -> Self {
         match name.to_str() {
             "B" => self::new("YRUHQSLDPXNGOKMIEBFZCWVJAT"),
             "C" => self::new("FVPJIAOYEDRZXWGCTKUQSBNMHL"),
