@@ -1,51 +1,55 @@
 #[derive(Default)]
-struct Rotor {
-    name: String,
-    rotor_position: u32,
-    notch_position: [u32; 2],
-    ring_setting: u32,
-    forward_wiring: Vec<u32>,
-    backward_wiring: Vec<u32>,
+pub struct Rotor<'a> {
+    name: &'a str,
+    rotor_position: usize,
+    notch_position: [usize; 2],
+    ring_setting: usize,
+    forward_wiring: Vec<usize>,
+    backward_wiring: Vec<usize>,
 }
 
-impl Rotor {
-    pub fn new(name: String, rotor_position: u32, notch_position: [u32; 2], ring_setting: u32, encoding: String) -> Self {
-        Rotor {
+impl<'a> Rotor<'a> {
+    pub fn new(name: &'a str, rotor_position: usize, notch_position: [usize; 2], ring_setting: usize, encoding: &str) -> Self {
+        let mut r = Self {
             name,
             rotor_position,
             notch_position,
             ring_setting,
-            forward_wiring: decode_wiring(encoding),
-            backward_wiring: inverse_wiring(forward_wiring),
+            forward_wiring: vec![0; 0],
+            backward_wiring: vec![0; 0],
+        };
+        r.forward_wiring = r.decode_wiring(encoding);
+        let fw: &Vec<usize> = r.forward_wiring.as_ref();
+        r.backward_wiring = r.inverse_wiring(fw.to_vec());
+        r
+    }
+
+    pub fn create(name: &'a str, rotor_position: usize, ring_setting: usize) -> Self {
+        match name {
+            "I" => Self::new(name, rotor_position, [16, 0], ring_setting, "EKMFLGDQVZNTOWYHXUSPAIBRCJ"),
+            "II" => Self::new(name, rotor_position,[4, 0], ring_setting, "AJDKSIRUXBLHWTMCQGZNPYFVOE"),
+            "III" => Self::new(name, rotor_position, [21, 0], ring_setting, "BDFHJLCPRTXVZNYEIWGAKMUSQO"),
+            "IV" => Self::new(name, rotor_position,[9, 0], ring_setting, "ESOVPZJAYQUIRHXLNFTGKDCMWB"),
+            "V" => Self::new(name, rotor_position, [25, 0], ring_setting, "VZBRGITYUPSDNHLXAWMJQOFECK"),
+            "VI" => Self::new(name, rotor_position, [12, 25], ring_setting, "VZBRGITYUPSDNHLXAWMJQOFECK"),
+            "VII" => Self::new(name, rotor_position, [12, 25], ring_setting, "NZJHGRCXMYSWBOUFAIVLPEKQDT"),
+            "VIII" => Self::new(name, rotor_position, [12, 25], ring_setting, "FKQHTLXOCBJSPDZRAMEWNIUYGV"),
+            _ => Self::new("Identity", rotor_position,[0, 0], ring_setting, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
         }
     }
 
-    pub fn create(name: String, rotor_position: u32, ring_setting: u32) -> Self {
-        match name.to_str() {
-            "I" => self::new(name, rotor_position, [16, 0], ring_setting, "EKMFLGDQVZNTOWYHXUSPAIBRCJ"),
-            "II" => self::new(name, rotor_position,[4, 0], ring_setting, "AJDKSIRUXBLHWTMCQGZNPYFVOE"),
-            "III" => self::new(name, rotor_position, [21, 0], ring_setting, "BDFHJLCPRTXVZNYEIWGAKMUSQO"),
-            "IV" => self::new(name, rotor_position,[9, 0], ring_setting, "ESOVPZJAYQUIRHXLNFTGKDCMWB"),
-            "V" => self::new(name, rotor_position, [25, 0], ring_setting, "VZBRGITYUPSDNHLXAWMJQOFECK"),
-            "VI" => self::new(name, rotor_position, [12, 25], ring_setting, "VZBRGITYUPSDNHLXAWMJQOFECK"),
-            "VII" => self::new(name, rotor_position, [12, 25], ring_setting, "NZJHGRCXMYSWBOUFAIVLPEKQDT"),
-            "VIII" => self::new(name, rotor_position, [12, 25], ring_setting, "FKQHTLXOCBJSPDZRAMEWNIUYGV"),
-            _ => self::new("Identity", rotor_position,[0, 0], ring_setting, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-        }
-    }
-
-    fn decode_wiring(encoding: String) -> Vec<u32> {
+    fn decode_wiring(&self, encoding: &str) -> Vec<usize> {
         let char_vec: Vec<char> = encoding.chars().collect();
-        let mut wiring = vec![0; char_vec.len()];
+        let mut wiring = vec![0usize; char_vec.len()];
         let iter = wiring.iter_mut().zip(char_vec.into_iter());
         for (w, c) in iter {
-            w = c.to_digit() - 65;
+            *w = c as usize - 65;
         }
         wiring
     }
 
-    fn inverse_wiring(forward_wiring: Vec<u32>) -> Vec<u32> {
-        let mut inverse = vec![0; forward_wiring.len()];
+    fn inverse_wiring(&self, forward_wiring: Vec<usize>) -> Vec<usize> {
+        let mut inverse = vec![0usize; forward_wiring.len()];
         for idx in 0..forward_wiring.len() {
             let forward = forward_wiring[idx];
             inverse[forward] = idx;
@@ -53,13 +57,13 @@ impl Rotor {
         inverse
     }
 
-    fn is_at_notch(&self) -> bool {
+    pub fn is_at_notch(&self) -> bool {
         let mut result: bool = false;
         for notch in self.notch_position.iter() {
-            if notch == 0 {
+            if *notch == 0 {
                 continue;
             }
-            if self.rotor_position == notch {
+            if self.rotor_position == *notch {
                 result = true;
                 break;
             }
@@ -67,17 +71,17 @@ impl Rotor {
         result
     }
 
-    fn encipher(k: u32, pos: u32, ring: u32, mapping: Vec<u32>) -> u32 {
-        let shift = pos - ring;
-        (mapping[(k + shift + 26) % 26] - shift + 26) % 26
+    fn encipher(k: usize, pos: usize, ring: usize, mapping: &Vec<usize>) -> usize {
+        let shift = pos as i32 - ring as i32;
+        ((mapping[((k as i32 + shift + 26) % 26) as usize] as i32 - shift + 26) % 26) as usize
     }
 
-    pub fn forward(&self, c: u32) -> u32 {
-        encipher(c, self.rotor_position, self.ring_setting, &self.forward_wiring)
+    pub fn forward(&self, c: usize) -> usize {
+        Self::encipher(c, self.rotor_position, self.ring_setting, &self.forward_wiring)
     }
 
-    pub fn backward(&self, c: u32) -> u32 {
-        encipher(c, self.rotor_position, self.ring_setting, &self.backward_wiring)
+    pub fn backward(&self, c: usize) -> usize {
+        Self::encipher(c, self.rotor_position, self.ring_setting, &self.backward_wiring)
     }
 
     pub fn turnover(&mut self) {
