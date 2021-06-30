@@ -27,10 +27,6 @@ impl<'a> Enigma<'a> {
         }
     }
 
-    // pub fn new_from_key(key: EnigmaKey) -> Self {
-    //     Self(key.rotors, "B", key.indicators, key.rings, key.plugboard)
-    // }
-
     pub fn rotate(&mut self) {
         if self.mid_rotor.is_at_notch() {
             self.mid_rotor.turnover();
@@ -42,20 +38,21 @@ impl<'a> Enigma<'a> {
         self.right_rotor.turnover();
     }
 
-    pub fn encrypt_int(&mut self, mut c: usize) -> usize {
+    pub fn encrypt_int(&mut self, c: usize) -> usize {
         self.rotate();
 
-        c = self.plugboard.forward(c);
+        let c0 = self.plugboard.forward(c);
 
-        let c1: usize = self.right_rotor.forward(c);
-        let c2: usize = self.right_rotor.forward(c1);
-        let c3: usize = self.right_rotor.forward(c2);
+
+        let c1: usize = self.right_rotor.forward(c0);
+        let c2: usize = self.mid_rotor.forward(c1);
+        let c3: usize = self.left_rotor.forward(c2);
 
         let c4: usize = self.reflector.forward(c3);
 
         let c5: usize = self.left_rotor.backward(c4);
-        let c6: usize = self.left_rotor.backward(c5);
-        let c7: usize = self.left_rotor.backward(c6);
+        let c6: usize = self.mid_rotor.backward(c5);
+        let c7: usize = self.right_rotor.backward(c6);
 
         self.plugboard.forward(c7)
     }

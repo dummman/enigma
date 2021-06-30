@@ -1,4 +1,3 @@
-// use std::collections::HashSet;
 use regex::Regex;
 
 #[derive(Default)]
@@ -21,7 +20,6 @@ impl Plugboard {
 
     pub fn get_unplugged_chars(plugboard: &str) -> Vec<usize> {
         let mut unplugged_chars: Vec<usize> = (0..26).collect();
-        // let mut a: HashSet = vec![1i32, 2, 3].into_iter().collect();
         if plugboard == "" {
             return unplugged_chars
         }
@@ -49,8 +47,8 @@ impl Plugboard {
             if pair.len() != 2 {
                 return Self::identity_plugboard()
             }
-            let c1: usize = pair.chars().next().unwrap() as usize - 65;
-            let c2: usize = pair.chars().next().unwrap() as usize - 65;
+            let c1: usize = pair.chars().nth(0).unwrap() as usize - 65;
+            let c2: usize = pair.chars().nth(1).unwrap() as usize - 65;
             if plugged_chars.contains(&c1) || plugged_chars.contains(&c2) {
                 return Self::identity_plugboard()
             }

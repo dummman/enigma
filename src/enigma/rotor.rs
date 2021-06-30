@@ -31,7 +31,7 @@ impl<'a> Rotor<'a> {
             "III" => Self::new(name, rotor_position, [21, 0], ring_setting, "BDFHJLCPRTXVZNYEIWGAKMUSQO"),
             "IV" => Self::new(name, rotor_position,[9, 0], ring_setting, "ESOVPZJAYQUIRHXLNFTGKDCMWB"),
             "V" => Self::new(name, rotor_position, [25, 0], ring_setting, "VZBRGITYUPSDNHLXAWMJQOFECK"),
-            "VI" => Self::new(name, rotor_position, [12, 25], ring_setting, "VZBRGITYUPSDNHLXAWMJQOFECK"),
+            "VI" => Self::new(name, rotor_position, [12, 25], ring_setting, "JPGVOUMFYQBENHZRDKASXLICTW"),
             "VII" => Self::new(name, rotor_position, [12, 25], ring_setting, "NZJHGRCXMYSWBOUFAIVLPEKQDT"),
             "VIII" => Self::new(name, rotor_position, [12, 25], ring_setting, "FKQHTLXOCBJSPDZRAMEWNIUYGV"),
             _ => Self::new("Identity", rotor_position,[0, 0], ring_setting, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
